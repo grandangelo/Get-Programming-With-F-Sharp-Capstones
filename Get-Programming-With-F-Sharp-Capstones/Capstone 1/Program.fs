@@ -1,10 +1,9 @@
 ﻿open System
 
-printfn "Get programming with F# - Capstone 1"
-printfn "q for quit"
 
 let waitForInput () = 
     Console.ReadLine()
+
 
 let rec manageInput () =
     printfn "Insert command"
@@ -16,4 +15,6 @@ let rec manageInput () =
 
 [<EntryPoint>]
 let main args =
+    printfn "Get programming with F# - Capstone 1"
+    printfn "q for quit"
     manageInput()
