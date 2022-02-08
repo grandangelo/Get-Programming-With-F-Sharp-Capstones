@@ -31,18 +31,31 @@ module main =
         printfn "Traveling to %A. Petrol after travel: %i" travelStage.Destination petrolAfterTravel
         petrolAfterTravel
 
+    let getDestination command =
+        match command with
+        | "1" -> Some(Destination.Home)
+        | "2" -> Some(Destination.Office)
+        | "3" -> Some(Destination.Stadium)
+        | "4" -> Some(Destination.GasStation)
+        | _ -> None
+
+    let getTravelStage destination = stages |> List.filter (fun i -> i.Destination = destination) |> List.exactlyOne
+
     let rec manageInput petrolUnit =
         printfn "Current petrol: %A" petrolUnit
         printfn "Insert destination"
         printfn "q: quit - 1: Home - 2 Office - 3 Stadium - 4 GasStation"
-        match waitForInput() with
+        let command = waitForInput()
+        match command with
         | "q" -> 0
-        | "1" | "2" | "3" | "4" -> // Travel
-                                   // Write remaining fuel
-                                   manageInput petrolUnit
-        | _ -> printfn "Unsupported command"
-               manageInput petrolUnit
-
+        | _ -> let destination = getDestination command
+               let petrolAfterTravel = 
+                match destination with
+                | Some currentDestination -> performTravel petrolUnit (getTravelStage currentDestination)
+                | None -> printfn "Unsupported command"
+                          petrolUnit
+               manageInput petrolAfterTravel
+                                    
     [<EntryPoint>]
     let main args =
         printfn "Get programming with F# - Capstone 1"
