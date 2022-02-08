@@ -17,22 +17,26 @@ type TravelStage = {
 
 module main =
     let stages = [
-        { Destination = Home; PetrolCost = -25 }
-        { Destination = Office; PetrolCost = -50 }
-        { Destination = Stadium; PetrolCost = -25 }
-        { Destination = GasStation; PetrolCost = 40 }
+        { Destination = Home; PetrolCost = 25 }
+        { Destination = Office; PetrolCost = 50 }
+        { Destination = Stadium; PetrolCost = 25 }
+        { Destination = GasStation; PetrolCost = 10 }
     ]
 
     let waitForInput () = 
         Console.ReadLine()
 
     let performTravel petrolUnit travelStage =
-        let petrolAfterTravel = petrolUnit + travelStage.PetrolCost
-        match petrolAfterTravel with
-        | petrol when petrolAfterTravel >= 0 -> printfn "Traveling to %A. Petrol after travel: %i" travelStage.Destination petrolAfterTravel
-                                                petrolAfterTravel
-        | _ -> printfn "Not enough petrol."
-               petrolUnit
+        let requiredPetrol = petrolUnit - travelStage.PetrolCost
+        let petrolAfterTravel = match requiredPetrol with
+                                | _ when requiredPetrol >= 0 -> 
+                                        printfn "Traveling to %A. Petrol after travel: %i" travelStage.Destination requiredPetrol
+                                        requiredPetrol
+                                | _ ->  printfn "Not enough petrol."
+                                        petrolUnit
+        match travelStage.Destination with
+        | _ when travelStage.Destination = Destination.GasStation -> petrolAfterTravel + 50
+        | _ -> petrolAfterTravel
 
     let getDestination command =
         match command with
@@ -41,7 +45,7 @@ module main =
         | "3" -> Some(Destination.Stadium)
         | "4" -> Some(Destination.GasStation)
         | _ -> None
-
+    
     let getTravelStage destination = stages |> List.filter (fun i -> i.Destination = destination) |> List.exactlyOne
 
     let rec manageInput petrolUnit =
