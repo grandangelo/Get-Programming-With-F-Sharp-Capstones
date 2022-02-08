@@ -23,20 +23,30 @@ module main =
         { Destination = GasStation; PetrolCost = 10 }
     ]
 
+    let canTravel petrolUnit travelStage =
+        let requiredPetrol = petrolUnit - travelStage.PetrolCost
+        match requiredPetrol with
+        | _ when requiredPetrol >= 0 -> true
+        | _ -> false
+
+    let getPetrolAfterTravel petrolUnit travelStage =
+        let petrolAfterTravel = petrolUnit - travelStage.PetrolCost
+        match travelStage.Destination with
+        | _ when travelStage.Destination = Destination.GasStation -> petrolAfterTravel + 50
+        | _ -> petrolAfterTravel
+
     let waitForInput () = 
         Console.ReadLine()
 
     let performTravel petrolUnit travelStage =
-        let requiredPetrol = petrolUnit - travelStage.PetrolCost
-        let petrolAfterTravel = match requiredPetrol with
-                                | _ when requiredPetrol >= 0 -> 
-                                        printfn "Traveling to %A. Petrol after travel: %i" travelStage.Destination requiredPetrol
-                                        requiredPetrol
-                                | _ ->  printfn "Not enough petrol."
-                                        petrolUnit
-        match travelStage.Destination with
-        | _ when travelStage.Destination = Destination.GasStation -> petrolAfterTravel + 50
-        | _ -> petrolAfterTravel
+        match canTravel petrolUnit travelStage with
+        | false -> 
+            printfn "Not enough petrol"
+            petrolUnit
+        | true -> 
+            let petrolAfterTravel = getPetrolAfterTravel petrolUnit travelStage
+            printfn "Traveling to %A. Petrol after travel: %i" travelStage.Destination petrolAfterTravel
+            petrolAfterTravel
 
     let getDestination command =
         match command with
