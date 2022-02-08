@@ -28,8 +28,11 @@ module main =
 
     let performTravel petrolUnit travelStage =
         let petrolAfterTravel = petrolUnit + travelStage.PetrolCost
-        printfn "Traveling to %A. Petrol after travel: %i" travelStage.Destination petrolAfterTravel
-        petrolAfterTravel
+        match petrolAfterTravel with
+        | petrol when petrolAfterTravel >= 0 -> printfn "Traveling to %A. Petrol after travel: %i" travelStage.Destination petrolAfterTravel
+                                                petrolAfterTravel
+        | _ -> printfn "Not enough petrol."
+               petrolUnit
 
     let getDestination command =
         match command with
