@@ -12,9 +12,8 @@ type Customer = {
 }
 
 module main =
-    
     module logging = 
-        let buildLogEntry customer = sprintf "Customer: %s - Balance %M €" customer.CustomerName customer.Balance
+        let buildLogEntry customer = sprintf "Customer: %s - Balance %M euro" customer.CustomerName customer.Balance
 
         let logToConsole customer parameters = buildLogEntry customer |> printfn "%s"
 
@@ -48,16 +47,18 @@ module main =
 
         let createAccount customerName initialBalance = { CustomerName = customerName; Balance = initialBalance }
 
-        let tryTransaction customer amount = 
-            let amountAfterWidthDraw = customer.Balance + amount
-            match amountAfterWidthDraw with
-            | amountAfterWidthDraw when amountAfterWidthDraw >= 0m -> applyTransaction customer amount
-            | _ -> customer
-
         let createCustomer () =
             let customerName = waitForInput "Insert customer name"
             let initialBalance = loopForBalance()
             { CustomerName = customerName; Balance = initialBalance }
+
+        let tryTransaction customer amount = 
+            let amountAfterWidthDraw = customer.Balance + amount
+            match amountAfterWidthDraw with
+            | amountAfterWidthDraw when amountAfterWidthDraw >= 0m -> applyTransaction customer amount
+            | _ ->
+                printfn "Insufficient balance"
+                customer
 
 
     open accountManagement
@@ -67,7 +68,6 @@ module main =
     [<EntryPoint>]
     let main args =
         printfn "Get programming with F# - Capstone 2"
-
         let customer = createCustomer()
 
         let rec commandLoop customer =
@@ -79,9 +79,11 @@ module main =
                 match convertedAmount with
                 | false, _ -> 
                     printfn "Invalid amount."
+                    logToConsole customer ""
                     commandLoop customer
                 | true, amount -> 
-                    let updatedBalance = tryTransaction customer amount
-                    commandLoop updatedBalance
+                    let updatedCustomer = tryTransaction customer amount
+                    logToConsole updatedCustomer ""
+                    commandLoop updatedCustomer
 
         commandLoop customer
