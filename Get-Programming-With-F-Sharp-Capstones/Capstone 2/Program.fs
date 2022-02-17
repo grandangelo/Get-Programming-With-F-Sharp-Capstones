@@ -28,17 +28,22 @@ module main =
 
         let stringToDecimal (inputString:string) = Decimal.TryParse(inputString)
 
-        let rec loopForBalance () =
+        let rec loopForBalance() =
             let stringBalance = waitForInput "Insert initial balance"
             let convertedBalance = stringToDecimal stringBalance
             match convertedBalance with
             | false, _ -> 
                 printfn "Invalid balance"
-                loopForBalance ()
+                loopForBalance()
+            | true, balance when balance <= 0m -> 
+                printfn "Initial balance must be positive"
+                loopForBalance()
             | true, balance -> balance
 
 
     module accountManagement =
+        open inputManagement
+
         let applyTransaction customer amount = { customer with Balance = customer.Balance + amount }
 
         let createAccount customerName initialBalance = { CustomerName = customerName; Balance = initialBalance }
@@ -49,6 +54,11 @@ module main =
             | amountAfterWidthDraw when amountAfterWidthDraw >= 0m -> applyTransaction customer amount
             | _ -> customer
 
+        let createCustomer () =
+            let customerName = waitForInput "Insert customer name"
+            let initialBalance = loopForBalance()
+            { CustomerName = customerName; Balance = initialBalance }
+
 
     open accountManagement
     open logging
@@ -58,8 +68,20 @@ module main =
     let main args =
         printfn "Get programming with F# - Capstone 2"
 
-        let customerName = waitForInput "Insert customer name"
-        let initialBalance = waitForInput "Insert initial balance"
-        let customer = { CustomerName = customerName; Balance = initialBalance }
+        let customer = createCustomer()
 
-        0
+        let rec commandLoop customer =
+            let command = waitForInput "Enter transaction amount (q for exit)"
+            match command with
+            | "q" -> 0
+            | _ -> 
+                let convertedAmount = stringToDecimal command
+                match convertedAmount with
+                | false, _ -> 
+                    printfn "Invalid amount."
+                    commandLoop customer
+                | true, amount -> 
+                    let updatedBalance = tryTransaction customer amount
+                    commandLoop updatedBalance
+
+        commandLoop customer
