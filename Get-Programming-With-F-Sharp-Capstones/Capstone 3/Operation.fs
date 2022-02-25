@@ -2,6 +2,9 @@
 
 open Capstone3.Domain
 
-let operate operationType amount balance =
-    let operation = Domain.Operation
-    0
+let operate (operationType:OperationType) (amount:decimal) balance =
+    let newBalance = 
+        match operationType with
+        | OperationType.Deposit -> balance + amount
+        | OperationType.Widthdraw -> balance - amount
+    OperationResult.Accepted, newBalance
