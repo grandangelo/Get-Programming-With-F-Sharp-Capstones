@@ -13,6 +13,15 @@ type TestClass () =
         Assert.IsTrue(true);
 
     [<TestMethod>]
+    member this.NegativeAmountIsRejected () =
+        let result1, amount1 = operate OperationType.Deposit (-1m), 10m
+        let result2, amount2 = operate OperationType.Widthdraw (-1m), 10m
+        Assert.AreEqual(OperationResult.Rejected, result1)
+        Assert.AreEqual(OperationResult.Rejected, result2)
+        Assert.AreEqual(10m, amount1)
+        Assert.AreEqual(10m, amount2)
+
+    [<TestMethod>]
     member this.ValidWidthdrawIsAccepted () =
         let result, amount = operate OperationType.Widthdraw 1m 10m
         Assert.AreEqual(OperationResult.Accepted, result)
@@ -24,4 +33,9 @@ type TestClass () =
         Assert.AreEqual(OperationResult.Rejected, result)
         Assert.AreEqual(1m, amount)
 
+    [<TestMethod>]
+    member this.DepositIsAccepted () =
+        let result, amount = operate OperationType.Deposit 10m 10m
+        Assert.AreEqual(OperationResult.Accepted, result)
+        Assert.AreEqual(20m, amount)
 
