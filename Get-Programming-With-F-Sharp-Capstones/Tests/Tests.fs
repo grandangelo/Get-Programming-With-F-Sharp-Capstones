@@ -14,8 +14,8 @@ type TestClass () =
 
     [<TestMethod>]
     member this.NegativeAmountIsRejected () =
-        let result1, amount1 = operate OperationType.Deposit (-1m), 10m
-        let result2, amount2 = operate OperationType.Widthdraw (-1m), 10m
+        let result1, amount1 = operate OperationType.Deposit -1m 10m
+        let result2, amount2 = operate OperationType.Widthdraw -1m 10m
         Assert.AreEqual(OperationResult.Rejected, result1)
         Assert.AreEqual(OperationResult.Rejected, result2)
         Assert.AreEqual(10m, amount1)
