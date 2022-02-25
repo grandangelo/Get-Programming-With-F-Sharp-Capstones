@@ -13,5 +13,7 @@ type TestClass () =
 
     [<TestMethod>]
     member this.JsonSerDeserWorking () =
-        let customer1 = { Name = "Customer 1"}
+
         Assert.IsTrue(true);
+
+
