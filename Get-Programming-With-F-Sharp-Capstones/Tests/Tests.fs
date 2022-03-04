@@ -5,13 +5,18 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 open Capstone3.Domain
 open Capstone3.Operation
 open Capstone3
+open Capstone3
+open Capstone3
+open Microsoft.VisualStudio.TestTools.UnitTesting
 
 [<TestClass>]
 type TestClass () =
     
-    let createAccount = {
+    let dbPath = "C:\Users\Andrea Angeloni\Desktop\Temp"
+
+    let createAccount customerName = {
         AccountID = System.Guid.NewGuid();
-        Owner = { Name = "Customer Name" };
+        Owner = { Name = customerName };
         Balance = 0m;
         Operations = []
         }
@@ -53,7 +58,7 @@ type TestClass () =
 
     [<TestMethod>]
     member this.OperationListIsCorrectlyPopulated () =
-        let account = createAccount
+        let account = createAccount "Customer Name"
 
         let updatedAccount = populateOperations account
 
@@ -63,7 +68,7 @@ type TestClass () =
 
     [<TestMethod>]
     member this.AccountIsCorreclySerDeser() =
-        let account = createAccount |> populateOperations
+        let account = createAccount "Customer Name" |> populateOperations
         let expectedData = "Enzo"
 
         let serializedData = Persistance.serializeAccount account
@@ -71,3 +76,13 @@ type TestClass () =
 
         Assert.AreEqual(account, deserializedData)
 
+    [<TestMethod>]
+    member this.AccountsAreCorrectlySavedAndRestored () =
+        let accounts =
+            [| (createAccount "Customer 1"); (createAccount "Customer 2") |]
+            |> Array.map populateOperations
+        accounts |> (Persistance.writeAllAccounts dbPath)
+
+        let readAccounts = Persistance.readAllAccounts dbPath
+
+        CollectionAssert.AreEqual(accounts, readAccounts)
