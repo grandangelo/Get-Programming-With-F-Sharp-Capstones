@@ -69,8 +69,6 @@ type TestClass () =
     [<TestMethod>]
     member this.AccountIsCorreclySerDeser() =
         let account = createAccount "Customer Name" |> populateOperations
-        let expectedData = "Enzo"
-
         let serializedData = Persistance.serializeAccount account
         let deserializedData = Persistance.deserializeAccount serializedData
 
@@ -86,3 +84,8 @@ type TestClass () =
         let readAccounts = Persistance.readAllAccounts dbPath
 
         CollectionAssert.AreEqual(accounts, readAccounts)
+
+
+
+
+

@@ -16,7 +16,6 @@ let readAllAccounts directoryPath =
     getAllJsonPath directoryPath |> Array.map readAccountFromFile
 
 let writeAccountToFile (directoryPath) account =
-    let serializedAccount = serializeAccount account
     let filepath = $"{directoryPath}\\{account.Owner.Name}.json"
     File.WriteAllText (filepath, serializeAccount account)
 
