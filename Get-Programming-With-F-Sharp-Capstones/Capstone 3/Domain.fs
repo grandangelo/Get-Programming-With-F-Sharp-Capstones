@@ -2,8 +2,7 @@
 
 type OperationType = | Deposit | Widthdraw
 type OperationResult = | Accepted | Rejected
-type Operation =
-    { 
+type Operation = { 
     OperationType: OperationType; 
     OperationAmount: decimal; 
     OperationResult: OperationResult; 
