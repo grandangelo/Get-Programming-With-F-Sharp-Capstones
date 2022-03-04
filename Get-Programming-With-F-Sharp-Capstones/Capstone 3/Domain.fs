@@ -10,4 +10,9 @@ type Operation = {
     BalanceAfter: decimal 
     }
 type Customer = { Name: string }
-type Account = { AccountID: System.Guid; Owner: Customer; Balance: decimal; Operations: Operation list }
+type Account = { 
+    AccountID: System.Guid; 
+    Owner: Customer; 
+    Balance: decimal; 
+    Operations: Operation list
+    }

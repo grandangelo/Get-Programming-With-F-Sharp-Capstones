@@ -4,10 +4,22 @@ open System
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open Capstone3.Domain
 open Capstone3.Operation
+open Capstone3
 
 [<TestClass>]
 type TestClass () =
+    
+    let createAccount = {
+        AccountID = System.Guid.NewGuid();
+        Owner = { Name = "Customer Name" };
+        Balance = 0m;
+        Operations = []
+        }
 
+    let populateOperations account =
+        operateAccount OperationType.Deposit 100m account |>
+        operateAccount OperationType.Widthdraw 200m
+  
     [<TestMethod>]
     member this.TestMethodPassing () =
         Assert.IsTrue(true);
@@ -41,19 +53,21 @@ type TestClass () =
 
     [<TestMethod>]
     member this.OperationListIsCorrectlyPopulated () =
-        let account = 
-            {
-            AccountID = System.Guid.NewGuid();
-            Owner = { Name = "Customer Name" };
-            Balance = 0m;
-            Operations = []
-            }
+        let account = createAccount
 
-        let updatedAccount = 
-            operateAccount OperationType.Deposit 100m account |>
-            operateAccount OperationType.Widthdraw 200m
-
+        let updatedAccount = populateOperations account
 
         Assert.AreEqual(2, updatedAccount.Operations.Length)
         Assert.AreEqual(100m, updatedAccount.Balance)
         Assert.AreEqual(OperationResult.Rejected, (updatedAccount.Operations.Item(1)).OperationResult)
+
+    [<TestMethod>]
+    member this.AccountIsCorreclySerDeser() =
+        let account = createAccount |> populateOperations
+        let expectedData = "Enzo"
+
+        let serializedData = Persistance.serializeAccount account
+        let deserializedData = Persistance.deserializeAccount serializedData
+
+        Assert.AreEqual(account, deserializedData)
+

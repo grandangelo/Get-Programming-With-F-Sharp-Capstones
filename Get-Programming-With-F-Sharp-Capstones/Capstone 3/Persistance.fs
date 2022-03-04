@@ -1,4 +1,8 @@
 ﻿module Capstone3.Persistance
 
-let serialize filePath accounts = 
-    0
+open Newtonsoft.Json
+open Domain
+
+let serializeAccount account = JsonConvert.SerializeObject(account)
+let deserializeAccount serialData = JsonConvert.DeserializeObject<Account>(serialData)
+
