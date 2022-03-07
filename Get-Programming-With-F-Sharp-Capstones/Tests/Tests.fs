@@ -8,6 +8,7 @@ open Capstone3
 open Capstone3
 open Capstone3
 open Microsoft.VisualStudio.TestTools.UnitTesting
+open Capstone3
 
 [<TestClass>]
 type TestClass () =
@@ -24,6 +25,10 @@ type TestClass () =
     let populateOperations account =
         operateAccount OperationType.Deposit 100m account |>
         operateAccount OperationType.Widthdraw 200m
+
+    let populateAccounts = 
+            [| (createAccount "Customer 1"); (createAccount "Customer 2") |]
+            |> Array.map populateOperations
   
     [<TestMethod>]
     member this.TestMethodPassing () =
@@ -76,16 +81,29 @@ type TestClass () =
 
     [<TestMethod>]
     member this.AccountsAreCorrectlySavedAndRestored () =
-        let accounts =
-            [| (createAccount "Customer 1"); (createAccount "Customer 2") |]
-            |> Array.map populateOperations
+        let accounts = populateAccounts
         accounts |> (Persistance.writeAllAccounts dbPath)
 
         let readAccounts = Persistance.readAllAccounts dbPath
 
         CollectionAssert.AreEqual(accounts, readAccounts)
 
+    [<TestMethod>]
+    member this.AccountIsCorrectlyFetchedByName () =
+        let account = 
+            Persistance.readAllAccounts dbPath 
+            |> Array.map populateOperations
+            |> Persistance.getAccount  "Customer 1"
+        
+        Assert.AreEqual("Customer 1", account.Owner.Name)
+        Assert.AreEqual(0m, account.Balance)
 
+    [<TestMethod>]
+    member this.AccountIsCorrectlyFetchedFromDb () =
+        let account = Persistance.getAccountFromDb dbPath  "Customer 1"
+        
+        Assert.AreEqual("Customer 1", account.Owner.Name)
+        Assert.AreEqual(100m, account.Balance)
 
 
 

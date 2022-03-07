@@ -21,3 +21,9 @@ let writeAccountToFile (directoryPath) account =
 
 let writeAllAccounts directoryPath accounts =
     accounts |> Array.iter (writeAccountToFile directoryPath)
+
+let getAccount ownerName accounts =
+    accounts |> Array.filter (fun a -> a.Owner.Name = ownerName) |> Array.head
+
+let getAccountFromDb directoryPath ownerName =
+    readAllAccounts directoryPath |> getAccount ownerName
